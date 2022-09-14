@@ -321,7 +321,7 @@ let mySymbol = Symbol()
       	1.  如果实参和形参数量相同，则对应的实参赋值给对应的形参
 
                       2.  如果**实参多于形参**，则**多余的实参不会使用**
-
+                
                       3. 如果**形参多于实参**，则**多余的形参为undefined**
 
     * 参数的类型：
@@ -737,7 +737,7 @@ const obj = {
 obj.sayHello() 
 ```
 
-##### 4. 在对象中，通过函数调用
+##### 4.在对象中，通过函数调用
 
 ```js
 const obj = {
@@ -793,4 +793,1441 @@ JS运行代码的模式有两种：
 ```
 
 ### 6. 面向对象
+
+#### 6.1 类
+
+* 使用Object创建对象的问题：
+
+1.  无法区分出不同类型的对象
+2. 不方便批量创建对象
+
+* 在JS中可以通过类（**class**）来解决这个问题：
+
+​    1.  类是对象模板，可以将对象中的属性和方法直接定义在类中
+        定义后，就可以直接通过类来创建对象
+    2.  通过同一个类创建的对象，我们称为同类对象
+        **可以使用instanceof来检查一个对象是否是由某个类创建**
+        如果某个对象是由某个类所创建，则我们称该对象是这个类的实例
+
+* 语法：
+  * class 类名 {} // 类名要使用大驼峰命名
+  *  const 类名 = class {}  
+* ​    通过类创建对象
+  *  new 类()
+
+#### 6.2 属性
+
+* 类的代码块，默认就是严格模式	
+  * 类的代码块是用来设置对象的属性的，不是什么代码都能写
+* **静态属性只能通过类去访问 ：类.属性**
+
+```js
+class Person{
+   name = "孙悟空" // Person的实例属性name p1.name
+   age = 18       // 实例属性只能通过实例访问 p1.age
+   static test = "test静态属性" // 使用static声明的属性，是静态属性（类属性） Person.test
+   static hh = "静态属性"   // 静态属性只能通过类去访问 Person.hh
+}
+const p1 = new Person()
+console.log(p1)
+```
+
+#### 6.3 方法
+
+**静态方法（类方法） 通过类来调用 静态方法中this指向的是当前类**
+
+```js
+class Person{
+    name = "孙悟空"
+    // sayHello = function(){
+    // } // 添加方法的一种方式
+    sayHello(){
+        console.log('大家好，我是' + this.name)
+    } // 添加方法（实例方法） 实例方法中this就是当前实例
+    static test(){
+        console.log("我是静态方法", this)
+    } // 静态方法（类方法） 通过类来调用 静态方法中this指向的是当前类
+}
+const p1 = new Person()
+// console.log(p1)
+Person.test()
+p1.sayHello()
+```
+
+![1662912061729](C:\Users\79426\AppData\Local\Temp\1662912061729.png)
+
+#### 6.4 构造方法
+
+* 在类中可以添加一个特殊的方法constructor
+* 该方法我们称为构造函数（构造方法）
+* 构造函数会在我们调用类创建对象时执行
+
+```js
+class Person{
+    constructor(name, age, gender){
+        // console.log("构造函数执行了~", name, age, gender)
+        // 可以在构造函数中，为实例属性进行赋值
+        // 在构造函数中，this表示当前所创建的对象
+        this.name = name
+        this.age = age
+        this.gender = gender
+    }
+}
+const p1 = new Person("孙悟空", 18, "男")
+```
+
+#### 6.5 封装
+
+* 封装
+
+  * 对象就是一个用来存储不同属性的容器
+
+  * 对象不仅存储属性，还要负责数据的安全
+
+  *  直接添加到对象中的属性，并不安全，因为它们可以被任意的修改
+
+  * 如何确保数据的安全：
+
+    1. 私有化数据
+
+    		将需要保护的数据设置为私有，只能在类内部使用
+
+    2. 提供setter和getter方法来开放对数据的操作
+
+       ​	属性设置私有，通过getter setter方法操作属性带来的好处
+
+       ​		-可以控制属性的读写权限
+
+       ​		-可以在方法中对属性的值进行验证
+
+  * 封装主要用来保证数据的安全
+
+  * **实现封装的方式：**
+
+    *  **1.属性私有化 加#**
+    *  **2.通过getter和setter方法来操作属性**
+
+    ​            get 属性名(){
+                    return this.#属性
+                }
+                set 属性名(参数){
+                    this.#属性 = 参数
+                }
+
+```js
+class Person {
+    // #address = "花果山" // 实例使用#开头就变成了私有属性，私有属性只能在类内
+    #name
+    #age
+    #gender
+    constructor(name, age, gender) {
+        this.#name = name
+        this.#age = age
+        this.#gender = gender
+    }
+    sayHello() {
+        console.log(this.#name)
+    }
+    // getter方法，用来读取属性
+    getName(){
+        return this.#name
+    }
+    // setter方法，用来设置属性
+    setName(name){
+        this.#name = name
+    }
+    getAge(){
+        return this.#age
+    }
+    setAge(age){
+        if(age >= 0){
+            this.#age = age
+        }
+    }
+    get gender(){
+        return this.#gender
+    }
+    set gender(gender){
+        this.#gender = gender
+    }
+}
+const p1 = new Person("孙悟空", 18, "男")
+// p1.age = "hello"
+// p1.getName()
+p1.setAge(-11) // p1.age = 11  p1.age
+// p1.setName('猪八戒')
+p1.gender = "女"
+console.log(p1.gender)
+```
+
+#### 6.6 多态
+
+* 多态
+  * 在JS中不会检查参数的类型，所以这就意味着任何数据都可以作为参数传递
+  *  要调用某个函数，无需指定的类型，只要对象满足某些条件即可
+  * 如果一个东西走路像鸭子，叫起来像鸭子，那么它就是鸭子
+  *  多态为我们提供了灵活性
+
+```js
+ class Person{
+     constructor(name){
+         this.name = name
+     }
+ }
+ class Dog{
+     constructor(name){
+         this.name = name
+     }
+ }
+ class Test{
+ }
+ const dog = new Dog('旺财')
+ const person = new Person("孙悟空")
+ const test = new Test()
+ // console.log(dog)
+ // console.log(person)
+ /* 
+     定义一个函数，这个函数将接收一个对象作为参数，他可以输出hello并打印对象的name属性
+
+ */
+function sayHello(obj){
+     // if(obj instanceof Person){
+         console.log("Hello,"+obj.name)
+     // }
+}
+sayHello(dog)
+```
+
+#### 6.7 继承
+
+* 继承
+
+  * **可以通过extends关键来完成继承**
+
+  * 当一个类继承另一个类时，就相当于将另一个类中的代码复制到了当前类中（简单理解）
+
+  * 继承发生时，被继承的类称为 父类（超类），继承的类称为 子类
+
+  * 通过继承可以减少重复的代码，并且可以在不修改一个类的前提对其进行扩展
+
+  * **通过继承可以在不修改一个类的情况下对其进行扩展**
+
+  * OCP 开闭原则：
+
+    **程序应该对修改关闭，对扩展开放**
+
+​    **封装 —— 安全性**
+    **继承 —— 扩展性**
+    **多态 —— 灵活性**
+
+```js
+class Animal{
+    constructor(name){
+        this.name = name
+    }
+    sayHello(){
+        console.log("动物在叫~")
+    }
+}
+class Dog extends Animal{
+    
+}
+class Cat extends Animal{
+    
+}
+const dog = new Dog("旺财")
+const cat = new Cat("汤姆")
+dog.sayHello()
+cat.sayHello()
+console.log(dog)
+console.log(cat)
+```
+
+![1662912880363](C:\Users\79426\AppData\Local\Temp\1662912880363.png)
+
+```js
+class Animal{
+    constructor(name){
+        this.name = name
+    }
+    sayHello(){
+        console.log("动物在叫~")
+    }
+}
+class Dog extends Animal{
+    // 在子类中，可以通过创建同名方法来重写父类的方法
+    sayHello(){
+        console.log("汪汪汪")
+    }
+    
+}
+class Cat extends Animal{
+    // 重写构造函数
+    constructor(name, age){
+        // 重写构造函数时，构造函数的第一行代码必须为super()
+        super(name) // 调用父类的构造函数
+        this.age = age
+    }
+    
+    sayHello(){
+        // 调用一下父类的sayHello
+        super.sayHello() // 在方法中可以使用super来引用父类的方法
+        console.log("喵喵喵")
+    }
+}
+        
+const dog = new Dog("旺财")
+const cat = new Cat("汤姆", 3)
+dog.sayHello()
+cat.sayHello()
+console.log(dog)
+console.log(cat)
+```
+
+![1662913033364](C:\Users\79426\AppData\Local\Temp\1662913033364.png)
+
+#### 6.8 对象的结构
+
+* 对象中存储属性的区域实际有两个：
+
+  1. 对象自身
+
+      直接通过对象所添加的属性，位于对象自身中
+
+     在类中通过 x = y 的形式添加的属性，位于对象自身中
+
+  2. **原型对象（prototype）**
+
+      - 对象中还有一些内容，会存储到其他的对象里（原型对象）
+      - 在对象中会有一个属性用来存储原型对象，这个属性叫做 _ **_proto_** _
+
+```js
+class Person {
+    name = "孙悟空"
+    age = 18
+    // constructor(){
+    //     this.gender = "男"
+    // }
+    sayHello() {
+        console.log("Hello，我是", this.name)
+    }
+}
+const p = new Person()
+// p.address = "花果山"
+// p.sayHello = "hello"
+console.log(p.sayHello)
+```
+
+#### 6.9 原型对象
+
+##### 6.9.1 访问原型对象
+
+- 访问一个对象的原型对象
+  - **对象** . _ **_proto_** _
+  - **Object.getPrototypeOf(对象)**
+- 原型对象中的数据：
+  - 对象中的数据（属性、方法等）
+  - constructor （对象的构造函数）
+- 注意：
+  - 原型对象也有原型，这样就构成了一条原型链，根据对象的复杂程度不同，原型链的长度也不同
+    - p对象的原型链：p对象 --> 原型 --> 原型 --> null
+    -  obj对象的原型链：obj对象 --> 原型 --> null
+- 原型链：
+  - 读取对象属性时，会优先对象自身属性
+  - 如果对象中有，则使用，没有则去对象的原型中寻找
+  - 直到找到Object对象的原型（Object的原型没有原型（为null））
+    -  如果依然没有找到，则返回undefined
+- **作用域链，是找变量的链，找不到会报错**
+-  **原型链，是找属性的链，找不到会返回undefined**
+
+```js
+class Person {
+    name = "孙悟空"
+    age = 18
+    sayHello() {
+        console.log("Hello，我是", this.name)
+    }
+}
+const p = new Person()
+// console.log(p)
+console.log(p.__proto__.__proto__.__proto__)
+console.log(p.constructor)
+console.log(Object.getPrototypeOf(p) === p.__proto__)
+const obj = {} // obj.__proto__
+```
+
+![1662913888872](C:\Users\79426\AppData\Local\Temp\1662913888872.png)
+
+* 所有的同类型对象它们的原型对象都是同一个，
+  * 也就意味着，同类型对象的原型链是一样的
+* 原型的作用：
+  * 原型就相当于是一个公共的区域，可以被所有该类实例访问，
+    * 可以将该类实例中，所有的公共属性（方法）统一存储到原型中
+    *  这样我们只需要创建一个属性，即可被所有实例访问
+  * JS中继承就是通过原型来实现的,
+    * 当继承时，子类的原型就是一个父类的实例
+  * 在对象中有些值是对象独有的，像属性（name，age，gender）每个对象都应该有自己值，
+    *  但是有些值对于每个对象来说都是一样的，像各种方法，对于一样的值没必要重复的创建
+  * 尝试：
+        函数的原型链是什么样子的？
+        Object的原型链是什么样子的？
+
+    ```js
+class Animal{
+}
+class Cat extends Animal{
+}
+class TomCat extends Cat{
+}
+// TomCat --> cat --> Animal实例 --> object --> Object原型 --> null
+// cat --> Animal实例 --> object --> Object原型 --> null
+// p对象 --> object --> Object原型 --> null
+const cat = new Cat()
+console.log(cat.__proto__.__proto__.__proto__.__proto__)//null
+    ```
+
+##### 6.9.2 修改原型对象
+
+* 大部分情况下，我们是不需要修改原型对象
+
+​    注意：
+        千万不要通过类的实例去修改原型
+            1. 通过一个对象影响所有同类对象，这么做不合适
+            2. 修改原型先得创建实例，麻烦
+            3. 危险
+
+* 处理通过 _ **_proto_** _ 能访问对象的原型外，
+  * 还可以通过类的prototype属性，来访问实例的原型
+* 修改原型时，最好通过通过类去修改
+
+​    好处
+        1. 一修改就是修改所有实例的原型
+        2. 无需创建实例即可完成对类的修改
+    原则：
+        **1. 原型尽量不要手动改**
+        **2. 要改也不要通过实例对象去改**
+        **3. 通过 类.prototype 属性去修改**
+        **4. 最好不要直接给prototype去赋值**
+
+```js
+class Person {
+    name = "孙悟空"
+    age = 18
+    sayHello() {
+        console.log("Hello，我是", this.name)
+    }
+}
+            
+Person.prototype.fly = () => {
+    console.log("我在飞！")
+}
+class Dog{
+}
+const p = new Person()
+const p2 = new Person()
+// 通过对象修改原型，向原型中添加方法，修改后所有同类实例都能访问该方法 不要这么做
+// p.__proto__.run = () => {
+//     console.log('我在跑~')
+// }
+// p.__proto__ = new Dog() // 直接为对象赋值了一个新的原型 不要这么做
+// console.log(p)
+// console.log(p2)
+// p.run()
+// p2.run()
+// console.log(Person.prototype) // 访问Person实例的原型对象
+p.fly()
+p2.fly()
+```
+
+#### 6.10 instanceof和hasOwn
+
+##### 6.10.1 instanceof
+
+* instanceof 用来检查一个对象是否是一个类的实例
+
+  * instanceof检查的是对象的原型链上是否有该类实例
+  *  只要原型链上有该类实例，就会返回true
+
+   dog -> Animal的实例 -> Object实例 -> Object原型
+
+* **Object是所有对象的原型，所以任何和对象和Object进行instanceof运算都会返回true**
+
+```js
+class Animal {}
+class Dog extends Animal {}
+const dog = new Dog()
+console.log(dog instanceof Dog) // true
+console.log(dog instanceof Animal) // true
+console.log(dog instanceof Object) // true
+const obj = new Object()
+// console.log(obj.__proto__)
+// console.log(Object.prototype)
+// dog.__proto__ / Dog.prototype
+```
+
+##### 6.10.2 Object.hasOwn
+
+*  in
+  * 使用in运算符检查属性时，**无论属性在对象自身还是在原型中，都会返回true**
+*  对象.hasOwnProperty(属性名) **(不推荐使用)**
+  -  用来检查一个对象的自身是否含有某个属性
+* **Object.hasOwn(对象, 属性名)** 
+  * 用来检查一个对象的自身是否含有某个属性
+
+```js
+class Person {
+    name = "孙悟空"
+    age = 18
+    sayHello() {
+        console.log("Hello，我是", this.name)
+    }
+}
+const p = new Person()
+console.log("sayHello" in p)
+console.log(p.hasOwnProperty("sayHello"))
+console.log(p.__proto__.__proto__.hasOwnProperty("hasOwnProperty"))
+console.log(Object.hasOwn(p, "sayHello"))
+```
+
+![1662915138799](C:\Users\79426\AppData\Local\Temp\1662915138799.png)
+
+#### 6.11 旧类（了解）
+
+* 早期JS中，直接通过函数来定义类
+  * 一个函数如果直接调用 xxx() 那么这个函数就是一个普通函数
+  * 一个函数如果通过new调用 new xxx() 那么这个函数就是一个构造函数
+
+```js
+// 1.
+function Person(){
+    
+}
+const p = new Person()
+console.log(p)
+//等价于class Person{}
+// 2.
+class MyClass{}
+new MyClass()
+// 2.只有MyClass（）会报错，必须通过 new 创建 MyClass
+// 方式 1 中 new 不是必须的，不加 new 则是普通函数，加 new 则是构造函数，可以用来创建对象 
+// 缺点：容易给代码造成紊乱 ，难区分是函数还是构造函数
+// 后来类必须通过 new 来创建对象
+```
+
+![1662964942731](C:\Users\79426\AppData\Local\Temp\1662964942731.png)
+
+```js
+var Person = (function () {
+    function Person(name, age) {
+        // 在构造函数中，this表示新建的对象
+        this.name = name
+        this.age = age
+        // this.sayHello = function(){
+        //     console.log(this.name)
+        // }
+        // 问题 ： 将方法创建在对象里会出现每次创建对象都会创建方法，造成冗余，所以应该将方法添加进原型
+    }
+    // 向原型中添加属性（方法）
+    Person.prototype.sayHello = function () {
+        console.log(this.name)
+    }
+    //new Person()//错误的，后面代码还没执行
+    // 静态属性
+    Person.staticProperty = "xxx"
+    // 静态方法
+    Person.staticMethod = function () {}
+    return Person
+})()
+
+// 为了将代码段隔离起来，避免外部的修改（例如静态方法/属性还没添加就在中间创建对象了）将所有方法放进一个立即执行函数里，返回一个Person --->闭包
+```
+
+* 旧类中的继承
+
+```js
+var Animal = (function(){
+    function Animal(){
+    }
+    return Animal
+})()
+var Cat = (function(){
+    function Cat(){
+    }
+    // 继承Animal
+    // 将Animal的实例赋值给Cat的原型，实现继承
+    Cat.prototype = new Animal()
+    return Cat
+})()
+var cat = new Cat()
+console.log(cat)
+function person(){
+}
+```
+
+#### 6.12 new 运算符
+
+* new运算符是创建对象时要使用的运算符
+
+  *  使用new时，到底发生了哪些事情：
+  *  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new
+
+* 当使用new去调用一个函数时，这个函数将会作为构造函数调用
+
+* 使用new调用函数时，将会发生这些事
+
+   1.  创建一个普通的JS对象（Object对象 {}）, 为了方便，称其为新对象
+
+  2.  将构造函数的prototype属性设置为新对象的原型
+  3.  使用实参来执行构造函数，并且将新对象设置为函数中的this
+  4.  如果构造函数返回的是一个非原始值，则该值会作为new运算的返回值返回**（千万不要这么做）**
+  5.  如果**构造函数的返回值是一个原始值或者没有指定返回值**，则**新的对象将会作为返回值返回**，**通常不会为构造函数指定返回值**
+
+#### 6.13 总结
+
+* 面向对象本质就是，编写代码时所有的操作都是通过对象来进行的。
+* 面向对象的编程的步骤：
+
+​        1. 找对象
+        2. 搞对象
+
+* 学习对象：
+
+      1.  明确这个对象代表什么，有什么用    
+
+  2. 如何获取到这个对象
+
+          3. 如何使用这个对象（对象中的属性和方法）
+
+* 对象的分类：
+
+  * 内建对象
+            - 由ES标准所定义的对象
+
+    ​	- 比如 Object Function String Number ...
+
+  * 宿主对象
+            - 由浏览器提供的对象
+
+    ​	- BOM、DOM
+
+  * 自定义对象
+            - 由开发人员自己创建的对象
+
+  
+
+### 7. 数组
+
+#### 7.1 for-of
+
+* **for-of 语句可以用来遍历可迭代对象**
+
+* 语法：
+
+  **for( 变量 of 可迭代的对象 ){**
+
+  **​        语句...**
+   **}**
+
+* 执行流程：
+      for-of 的循环体会执行多次，**数组中有几个元素就会执行几次**
+          每次执行时都会将一个元素赋值给变量
+
+* **可以遍历数组和字符串，但只能按顺序**
+
+```js
+const arr = ["孙悟空", "猪八戒", "沙和尚", "唐僧"]
+for(let value of arr){
+    console.log(value)
+}
+ for(let value of "hello"){
+     console.log(value)
+ }
+```
+
+#### 7.2 数组的方法
+
+* ##### Array.isArray()
+
+  ​    - 用来检查一个对象是否是数组   
+* ##### at()
+
+  * 可以根据索引获取数组中的指定元素
+      * **at可以接收负索引作为参数**
+* **concat()**
+  *  **用来连接两个或多个数组**
+  *  非破坏性方法，不会影响原数组，而是返回一个新的数组
+
+```js
+ const arr = ["孙悟空", "猪八戒", "沙和尚", "唐僧"]
+ console.log(arr.at(-2))
+ // console.log(arr[arr.length - 2])
+ const arr2 = ["白骨精", "蜘蛛精", "玉兔精"]
+ let result = arr.concat(arr2, ["牛魔王","铁扇公主"])
+ console.log(result)
+```
+
+![1663061445355](C:\Users\79426\AppData\Local\Temp\1663061445355.png)
+
+
+
+* **indexOf()**
+
+  * 获取元素在数组中第一次出现的索引
+  * 参数：
+    1.  要查询的元素
+    2.  查询的起始位置
+
+* **lastIndexOf()**
+
+  * 获取元素在数组中最后一次出现的位置
+  * 返回值：
+           1.  找到了则返回元素的索引
+           2.  没有找到返回-1
+
+* **join()**
+
+  * 将一个数组中的元素连接为一个字符串
+  * ["孙悟空", "猪八戒", "沙和尚", "唐僧", "沙和尚"] -> "孙悟空,猪八戒,沙和尚,唐僧,沙和尚"
+  * 参数：
+            指定一个字符串作为连接符
+
+* **slice()**
+
+  *  用来截取数组（非破坏性方法）  
+
+  * 参数：
+
+            1. 截取的起始位置（包括该位置）
+      
+            2.  截取的结束位置（不包括该位置）
+      
+                ​	- 第二个参数可以省略不写，如果省略则会一直截取到最后
+      
+                ​	- 索引可以是负值
+      
+                **如果将两个参数全都省略，则可以对数组进行浅拷贝（浅复制）**
+
+```js
+let arr = ["孙悟空", "猪八戒", "沙和尚", "唐僧", "沙和尚"]
+let result = arr.indexOf("沙和尚")
+result = arr.indexOf("沙和尚", 3)
+result = arr.lastIndexOf("沙和尚", 3)
+result = arr.indexOf("白骨精")
+result = arr.join()
+result = arr.join("@-@")
+result = arr.join("")
+arr = ["孙悟空", "猪八戒", "沙和尚", "唐僧"]
+result = arr.slice(0, 2)
+result = arr.slice(1, 3)
+result = arr.slice(1, -1)
+result = arr.slice()
+```
+
+![1663063083121](C:\Users\79426\AppData\Local\Temp\1663063083121.png)
+
+* **push()**
+  * 向数组的末尾添加一个或多个元素，并返回新的长度
+
+* **pop()**
+  * 删除并返回数组的最后一个元素
+
+* **unshift()**
+
+  * 向数组的**开头添加一个或多个元素，并返回新的长度**
+
+* **shift()**
+
+  *  **删除并返回数组的第一个元素**
+
+* **reverse()**
+
+  * **反转数组**
+
+* **splice()**
+
+  *  可以删除、插入、替换数组中的元素
+
+  * 参数：
+
+    1.  删除的起始位置
+    2.  删除的数量
+    3.  要插入的元素
+
+  * 返回值：
+
+    ​	**返回被删除的元素**
+
+```js
+let arr = ["孙悟空", "猪八戒", "沙和尚"]
+let result = arr.push("唐僧", "白骨精")
+console.log(arr)
+result = arr.pop()
+let length = arr.unshift("牛魔王")
+arr.shift()
+console.log(arr)
+arr = ["孙悟空", "猪八戒", "沙和尚", "唐僧"]
+console.log(arr);
+result = arr.splice(1, 2)
+console.log(result);
+// result = arr.splice(1, 1, "牛魔王", "铁扇公主", "红孩儿")
+result = arr.splice(1, 0, "牛魔王", "铁扇公主", "红孩儿")
+console.log(result)
+console.log(arr)
+arr = ["a", "b", "c", "d"]
+arr.reverse()
+```
+
+![1663074402157](C:\Users\79426\AppData\Local\Temp\1663074402157.png)
+
+* **sort()**
+
+  * sort用来对数组进行排序（会对改变原数组）
+
+  * sort默认会将数组升序排列
+
+    ​	**注意：sort默认会按照Unicode编码进行排序，所以如果直接通过sort对数字进行排序可能会得到一个不正确的结果**
+
+  * 参数：
+
+    * 可以传递一个回调函数作为参数，通过回调函数来指定排序规则
+
+​           		**(a, b) => a - b 升序排列**
+            		**(a, b) => b - a 降序排列**
+
+* **forEach()**
+
+  * **用来遍历数组**
+
+  * **它需要一个回调函数作为参数，这个回调函数会被调用多次**
+
+    ​        **数组中有几个元素，回调函数就会调用几次**
+            **每次调用，都会将数组中的数据作为参数传递**
+
+  * 回调函数中有三个参数：
+
+    * element 当前的元素
+    * index 当前元素的索引
+    * array 被遍历的数组
+
+* **filter()**
+
+  *  **将数组中符合条件的元素保存到一个新数组中返回**
+  *  **需要一个回调函数作为参数，会为每一个元素去调用回调函数，并根据返回值来决定是否将元素添加到新数组中**
+  * 非破坏性方法，不会影响原数组
+
+* **map()**
+  * **根据当前数组生成一个新数组**
+  * **需要一个回调函数作为参数，**
+    * 回调函数的返回值会成为新数组中的元素
+  * 非破坏性方法不会影响原数组
+
+* **reduce()**
+
+  * **可以用来将一个数组中的所有元素整合为一个值**
+  * 参数：
+
+  ​        1.  回调函数，通过回调函数来指定合并的规则
+          2.  可选参数，初始值
+
+```JS
+arr.sort()
+//(11) [0, 1, 10, 2, 3, 4, 5, 6, 7, 8, 9]
+arr.sort((a, b) => a - b)
+//(11) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+arr.sort((a, b) => b - a)
+//(11) [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+arr = ["孙悟空", "猪八戒", "沙和尚", "唐僧"]
+arr.forEach((element, index, array) => {
+    // console.log(array)
+    /*
+        (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+        (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+        (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+        (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+    */
+})
+arr.forEach((element, index) => console.log(index, element))
+/*
+    0 '孙悟空'
+    1 '猪八戒'
+    2 '沙和尚'
+    3 '唐僧'
+*/
+arr = [1, 2, 3, 4, 5, 6, 7, 8]
+// 获取数组中的所有偶数
+let result = arr.filter((ele) => ele > 5)
+arr = ["孙悟空", "猪八戒", "沙和尚"]
+// html多个数据添加标签
+result = arr.map((ele) => "<li>" + ele + "</li>")
+arr = [1, 2, 3, 4, 5, 6, 7, 8]
+result = arr.reduce((a, b) => {
+    /* 
+        1, 2
+        3, 3
+        6, 4
+        10, 5
+    a : 1+1, b: 2
+    */
+    console.log(a, b)
+    return a + b
+}) 
+result = arr.reduce((a, b) => a + b, 10)
+/ 10 --->指定a的初始值
+    /* 
+        10, 1
+        11, 2
+        13, 3
+        16, 4
+        20, 5
+        25, 6
+        31, 7
+        38, 8
+        46
+    */
+console.log(result)
+// 46
+```
+
+
+
+#### 7.3 对象的复制
+
+* 如何去复制一个对象 复制必须要产生新的对象
+* **当调用slice时，会产生一个新的数组对象，从而完成对数组的复制**
+
+```js
+const arr = ["孙悟空", "猪八戒", "沙和尚"]
+const arr3 = arr.slice()
+arr3[0] = "唐僧"
+console.log(arr)
+console.log(arr3)
+```
+
+![1663063617314](C:\Users\79426\AppData\Local\Temp\1663063617314.png)
+
+* **... (展开运算符)**
+  * 可以将一个数组中的元素展开到另一个数组中或者作为函数的参数传递
+  * 通过它也可以对数组进行浅复制
+
+```js
+const arr = ["孙悟空", "猪八戒", "沙和尚"]
+const arr2 = arr.slice()
+const arr3 = [...arr]
+function sum(a, b, c) {
+    return a + b + c
+}
+const arr4 = [10, 20, 30]
+let result = sum(arr4[0], arr4[1], arr4[2])
+result = sum(...arr4)
+
+const obj = { name: "孙悟空", age: 18 }
+// const obj2 = Object.assign({}, obj)
+const obj2 = { address: "花果山", age: 28 }
+Object.assign(obj2, obj)
+console.log(obj2)
+const obj3 = { address: "高老庄", ...obj, age: 48 } // 将obj中的属性在新对象中展开
+console.log(obj3);
+```
+
+![1663073282250](C:\Users\79426\AppData\Local\Temp\1663073282250.png)
+
+* 对象的复制
+  *  **Object.assign(目标对象, 被复制的对象)**
+  *  将被复制对象中的属性复制到目标对象里，并将目标对象返回
+* 也可以使用展开运算符对对象进行复制
+
+#### 7.4 浅拷贝和深拷贝
+
+* 浅拷贝（shallow copy）
+  * **通常对对象的拷贝都是浅拷贝**
+  * 浅拷贝顾名思义，只对对象的浅层进行复制（只复制一层）
+  * **如果对象中存储的数据是原始值，那么拷贝的深浅是不重要**
+  * **浅拷贝只会对对象本身进行复制，不会复制对象中的属性（或元素）**
+* 深拷贝（deep copy）
+  * **深拷贝指不仅复制对象本身，还复制对象中的属性和元素**
+  * 因为性能问题，通常情况不太使用深拷贝
+
+```js
+// 创建一个数组
+const arr = [{name:"孙悟空"}, {name:"猪八戒"}]
+const arr2 = arr.slice() // 浅拷贝
+const arr3 = structuredClone(arr) // 专门用来深拷贝的方法
+console.log(arr)
+console.log(arr3)
+```
+
+浅拷贝：
+
+![1663063843596](C:\Users\79426\AppData\Local\Temp\1663063843596.png)
+
+深拷贝：
+
+![1663064047541](C:\Users\79426\AppData\Local\Temp\1663064047541.png)
+
+#### 7.5 数组去重
+
+##### 7.5.1 方法一 ： splice 的运用
+
+```js
+const arr = [1, 2, 1, 3, 2, 2, 4, 5, 5, 6, 7]
+// 编写代码去除数组中重复的元素
+// 分别获取数组中的元素
+for (let i = 0; i < arr.length; i++) {
+    // 获取当前值后边的所有值
+    for (let j = i + 1; j < arr.length; j++) {
+        // 判断两个数是否相等
+        if (arr[i] === arr[j]) {
+            // 出现了重复元素，删除后边的元素
+            arr.splice(j, 1)
+            /* 
+                当arr[i] 和 arr[j]相同时，它会自动的删除j位置的元素，然后j+1位置的元素，会变成j位置的元素
+                而j位置已经比较过了，不会重复比较，所以会出现漏比较的情况
+                解决办法，当删除一个元素后，需要将该位置的元素在比较一遍
+            */
+            j--
+        }
+    }
+}
+console.log(arr)
+```
+
+##### 7.5.2 方法二 ： push 的运用
+
+```js
+const arr = [1, 2, 1, 3, 2, 2, 4, 5, 5, 6, 7]
+const newArr = []
+for(let ele of arr){
+    if(newArr.indexOf(ele) === -1){
+        newArr.push(ele)
+    }
+}
+console.log(newArr)
+```
+
+#### 7.6 回调函数
+
+##### 7.6.1 filter()函数用来对数组进行过滤
+
+```js
+class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+}
+const personArr = [
+    new Person("孙悟空", 18),
+    new Person("沙和尚", 38),
+    new Person("红孩儿", 8),
+    new Person("白骨精", 16),
+]
+// filter()函数用来对数组进行过滤
+function filter(arr) {
+    const newArr = []
+    for (let i = 0; i < arr.length; i++) {
+        if (arr[i].age < 18) {
+            newArr.push(arr[i])
+        }
+    }
+    return newArr
+}
+result = filter(personArr)
+console.log(result)
+```
+
+##### 7.6.2 问题
+
+* 目前我们的函数只能过滤出数组中age属性小于18的对象
+  * 我们希望过滤更加灵活：
+    * 比如：过滤数组中age大于18的对象
+      * age大于60的对象
+      * age大于n的对象
+      * 过滤数组中name为xxx的对象
+      * 过滤数组中的偶数
+                     ...
+* **一个函数的参数也可以是函数**
+  * **如果将函数作为参数传递，那么我们就称这个函数为回调函数（callback）**
+
+```js
+class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+}
+const personArr = [
+    new Person("孙悟空", 18),
+    new Person("沙和尚", 38),
+    new Person("红孩儿", 8),
+    new Person("白骨精", 16),
+]
+function filter(arr, cb) {
+    const newArr = []
+    // console.log("-->", cb)
+    // cb()
+    for (let i = 0; i < arr.length; i++) {
+        // arr[i].age >= 18
+        // arr[i].age > 60
+        // arr[i].age > n
+        // arr[i].name === "xxx"
+        // arr[i] % 2 === 0
+        if (cb(arr[i])) {
+            newArr.push(arr[i])
+        }
+    }
+    return newArr
+}
+function fn(a){
+    return a.name === "孙悟空"
+}
+result = filter(personArr, fn)
+console.log(result)
+```
+
+![1663075228781](C:\Users\79426\AppData\Local\Temp\1663075228781.png)
+
+#### 7.7 高阶函数
+
+##### 7.7.1 高阶函数引例
+
+* **如果一个函数的参数或返回值是函数，则这个函数就称为高阶函数**
+* 为什么要将函数作为参数传递？（回调函数有什么作用？）
+  * **将函数作为参数，意味着可以对另一个函数动态的传递代码**
+
+```js
+class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+}
+const personArr = [
+    new Person("孙悟空", 18),
+    new Person("沙和尚", 38),
+    new Person("红孩儿", 8),
+    new Person("白骨精", 16),
+]
+function filter(arr, cb) {
+    const newArr = []
+    for (let i = 0; i < arr.length; i++) {
+        if (cb(arr[i])) {
+            newArr.push(arr[i])
+        }
+    }
+    return newArr
+}
+// 我们这种定义回调函数的形式比较少见，通常回调函数都是匿名函数
+// function fn(a) {
+//     return a.name === "孙悟空"
+// }
+result = filter(personArr, a => a.name === "孙悟空")
+console.log(result);
+result = filter(personArr, a => a.age >= 18)
+console.log(result);
+const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+result = filter(arr, a => a % 2 === 0)
+console.log(result)
+```
+
+![1663075462058](C:\Users\79426\AppData\Local\Temp\1663075462058.png)
+
+##### 7.7.2 高阶函数
+
+* 希望在someFn()函数执行时，可以记录一条日志
+* 在不修改原函数的基础上，为其增加记录日志的功能
+* 可以通过高阶函数，来动态的生成一个新函数
+
+```js
+function someFn() {
+    console.log(2);
+    return "hello"
+}
+function outer(cb){
+    return () => {
+        console.log(1);
+        console.log("记录日志~~~~~")
+        const result = cb()
+        // result = hello
+        return result
+    }
+}
+let result = outer(someFn)
+console.log("result = " + result)
+//result 只返回了第一个return
+console.log("result() = " +result());
+//result() 变成了立即执行函数，继续执行后续代码
+
+function test(){
+    console.log("test~~~~")
+    return "test"
+}
+let newTest = outer(test)
+// 既有test的全部功能又能记录日记
+newTest()
+```
+
+![1663077828371](C:\Users\79426\AppData\Local\Temp\1663077828371.png)
+
+#### 7.8 闭包
+
+* 创建一个函数，第一次调用时打印1，第二次调用打印2，以此类推
+* 可以利用函数，来隐藏不希望被外部访问到的变量
+* 闭包：
+  *  闭包就是能访问到外部函数作用域中变量的函数
+* 什么时候使用：
+  *  **当我们需要隐藏一些不希望被别人访问的内容时就可以使用闭包**
+* 构成闭包的要件：
+      1.  函数的嵌套
+      2.  内部函数要引用外部函数中的变量
+      3.  内部函数要作为返回值返回
+* **函数在作用域，在函数创建时就已经确定的（词法作用域）**
+  * **和调用的位置无关**
+  * **闭包利用的就是词法作用域**
+
+```js
+function outer(){
+    let num = 0 // 位于函数作用域中
+    return () => {
+        num++
+        console.log(num)
+    }
+}
+const newFn = outer()
+// console.log(newFn)
+newFn()
+newFn()
+newFn()
+// 每次的num都是独立的
+```
+
+```js
+function fn(){
+    console.log(a)
+}
+function fn2(){
+    let a = "fn2中的a"
+    fn()
+}
+// fn2()
+function fn3(){
+    let a = "fn3中的a"
+    function fn4(){
+        console.log(a)
+    }
+    return fn4
+}
+let fn4 = fn3()
+fn4()//输出 "fn3中的a"
+```
+
+#### 7.9 闭包的注意事项
+
+* 闭包的生命周期：
+
+  1. **闭包在外部函数调用时产生，外部函数每次调用都会产生一个全新的闭包**
+
+          2. **在内部函数丢失时销毁（内部函数被垃圾回收了，闭包才会消失）**
+
+* 注意事项：
+
+  * 闭包主要用来隐藏一些不希望被外部访问的内容，
+
+    ​	这就意味着闭包需要占用一定的内存空间
+
+  * 相较于类来说，**闭包比较浪费内存空间（类可以使用原型而闭包不能）**，
+            需要**执行次数较少时，使用闭包**
+            需要大量创建实例时，使用类
+
+```js
+function outer(){
+    let someVariable = "someValue"
+    return function(){
+        console.log(someVariable)
+    }
+}
+function outer2(){
+    let num = 0
+    return () => {
+        num++
+        console.log(num)
+    }
+}
+let fn1 = outer2() // 独立闭包
+let fn2 = outer2() // 独立闭包
+fn1()
+fn2()
+// fn1 = null
+// fn2 = null
+// 销毁
+```
+
+#### 7.10 可变参数
+
+* arguments
+
+  * arguments是函数中又一个隐含参数
+  * arguments是一个类数组对象（伪数组）
+    * 和数组相似，可以通过索引来读取元素，也可以通过for循环变量，但是它不是一个数组对象，不能调用数组的方法
+  * arguments用来存储函数的实参，
+    * 无论用户是否定义形参，实参都会存储到arguments对象中
+    *  可以通过该对象直接访问实参
+
+* 可变参数，在定义函数时可以将参数指定为可变参数
+
+  * 可变参数可以接收任意数量实参，并将他们统一存储到一个数组中返回
+  * 可变参数的作用和arguments基本是一致，但是也具有一些不同点：
+
+  ​        1. 可变参数的名字可以自己指定
+          2. 可变参数就是一个数组，可以直接使用数组的方法
+          3. 可变参数可以配合其他参数一起使用
+
+```js
+function fn() {
+    arguments.forEach((ele) => console.log(ele))
+}
+// fn(1, 10, 33)
+// 定义一个函数，可以求任意个数值的和
+function sum() {
+    // 通过arguments，可以不受参数数量的限制更加灵活的创建函数
+    let result = 0
+    for (let num of arguments) {
+        result += num
+    }
+    return result
+}
+function fn2(...abc) {
+    console.log(abc)
+}
+function sum2(...num) {
+    return num.reduce((a, b) => a + b, 0)
+}
+// 当可变参数和普通参数一起使用时，需要将可变参数写到最后
+function fn3(a, b, ...args) {
+    // for (let v of arguments) {
+    //     console.log(v)
+    // }
+    console.log(args)
+}
+fn3(123, 456, "hello", true, "1111")
+```
+
+#### 7.11 函数
+
+* 根据函数调用方式的不同，this的值也不同：
+
+  ​    1.  以函数形式调用，this是window
+      2.  以方法形式调用，this是调用方法的对象
+      3.  构造函数中，this是新建的对象
+      **4.  箭头函数没有自己的this，由外层作用域决定**
+      **5.  通过call和apply调用的函数，它们的第一个参数就是函数的this**
+
+  ​    **6.  通过bind返回的函数，this由bind第一个参数决定（无法修改） **
+
+* 调用函数除了通过 函数() 这种形式外，还可以通过其他的方式来调用函数
+
+  * 比如，我们可以通过调用函数的call()和apply()来个方法来调用函数
+
+  ​        **函数.call()**
+          **函数.apply()**
+          - call 和 apply除了可以调用函数，还可以用来指定函数中的this
+          - call和apply的第一个参数，将会成为函数的this
+          **- 通过call方法调用函数，函数的实参直接在第一个参数后一个一个的列出来**
+          **- 通过apply方法调用函数，函数的实参需要通过一个数组传递**
+
+* **bind()** 是函数的方法，可以**用来创建一个新的函数**
+
+```js
+function fn() {
+    console.log("函数执行了~", this)
+}
+const obj = { name: "孙悟空", fn }
+// fn.call(obj)
+// fn.apply(console)
+function fn2(a, b) {
+    console.log("a =", a, "b =", b, this)
+}
+// fn2.call(obj, "hello", true)
+fn2.apply(obj, ["hello", true])
+```
+
+```js
+function fn(a, b, c) {
+    console.log("fn执行了~~~~", this)
+    console.log(a, b, c)
+}
+const obj = {name:"孙悟空"}
+const newFn = fn.bind(obj, 10, 20, 30)
+newFn()
+const arrowFn = () => {
+    console.log(this)
+}
+// arrowFn.call(obj)
+const newArrowFn = arrowFn.bind(obj)
+// newArrowFn()
+class MyClass{
+    fn = () => {
+        console.log(this)
+        //外层是MyClass
+    }
+}
+const mc = new MyClass()
+// mc.fn.call(window)
+```
+
+#### 8. 内建对象
+
+#### 8.1 解构赋值
+
+```js
+const arr = ["孙悟空", "猪八戒", "沙和尚"]
+let a,b,c
+    // a = arr[0]
+    // b = arr[1]
+    // c = arr[2]
+;[a, b, c] = arr // 解构赋值
+let [d, e, f, g] = ["唐僧", "白骨精", "蜘蛛精", "玉兔精"] // 声明同时解构
+console.log(d, e, f, g)
+;[d, e, f, g] = [1, 2, 3] //1 2 3 undefined
+;[d, e, f = 77, g = 10] = [1, 2, 3]// 1 2 3 10
+[d, e, f, g] = ["唐僧", "白骨精", "蜘蛛精", "玉兔精"]
+;[d, e, f = 77, g = g] = [1, 2, 3]// 1 2 3 '玉兔精'
+let [n1, n2, ...n3] = [4, 5, 6, 7] 
+// 解构数组时，可以使用...来设置获取多余的元素
+// 4 5 (2) [6, 7]
+function fn(){
+    return ["二郎神", "猪八戒"]
+}
+let [name1, name2] = fn()
+// 可以通过解构赋值来快速交换两个变量的值
+let a1 = 10
+let a2 = 20
+;[a1, a2] = [a2, a1] // [20, 10]
+const arr2 = ["孙悟空", "猪八戒"]
+// console.log(arr2)
+;[arr2[0], arr2[1]] = [arr2[1], arr2[0]]
+// console.log(arr2)
+/* 
+    数组中可以存储任意类型的数据，也可以存数组,
+        如果一个数组中的元素还是数组，则这个数组我们就称为是二维数组
+*/
+const arr3 = [["孙悟空", 18, "男"], ["猪八戒" ,28, "男"]]
+let [[name, age, gender], obj] = arr3
+console.log(name, age, gender)// 孙悟空 18 男
+console.log(obj)// (3) ['猪八戒', 28, '男']
+```
+
+#### 8.2 对象的解构
+
+```js
+const obj = { name: "孙悟空", age: 18, gender: "男" }
+// let { name, age, gender } = obj // 声明变量同时解构对象
+let name, age, gender
+;({ name, age, gender } = obj)
+//js解析时，以大括号开头的解析成代码块，对象给代码块赋值会很奇怪，所以小括号开头消除误会
+let { address } = obj // 没有的属性返回undefined
+// console.log(name, age, gender)
+let {name:a, age:b, gender:c, address:d="花果山"} = obj
+// 起别名abcd，将name赋给a....
+console.log(a, b, c, d) // 孙悟空 18 男 花果山
+```
 

@@ -16,20 +16,26 @@
             */
 
             function someFn() {
+                console.log(2);
                 return "hello"
             }
 
             function outer(cb){
                 return () => {
+                    console.log(1);
                     console.log("记录日志~~~~~")
                     const result = cb()
+                    // result = hello
                     return result
                 }
             }
 
             let result = outer(someFn)
 
-            // console.log(result)
+            console.log("result = " + result)
+            //result() 变成了立即执行函数
+            console.log("result() = " +result());
+
 
 
             function test(){

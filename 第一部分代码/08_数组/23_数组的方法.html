@@ -51,29 +51,40 @@
 
             // console.log(arr)
 
-            // arr.sort()
+            arr.sort()
+            //(11) [0, 1, 10, 2, 3, 4, 5, 6, 7, 8, 9]
             arr.sort((a, b) => a - b)
+            //(11) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             arr.sort((a, b) => b - a)
-
-            // console.log(arr)
+            //(11) [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
             arr = ["孙悟空", "猪八戒", "沙和尚", "唐僧"]
 
-            // arr.forEach((element, index, array) => {
-            //     console.log(array)
-            // })
+            arr.forEach((element, index, array) => {
+                // console.log(array)
+                /*
+                    (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+                    (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+                    (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+                    (4) ['孙悟空', '猪八戒', '沙和尚', '唐僧']
+                */
+            })
 
-            // arr.forEach((element, index) => console.log(index, element))
+            arr.forEach((element, index) => console.log(index, element))
+            /*
+                0 '孙悟空'
+                1 '猪八戒'
+                2 '沙和尚'
+                3 '唐僧'
+            */
 
             arr = [1, 2, 3, 4, 5, 6, 7, 8]
 
             // 获取数组中的所有偶数
             let result = arr.filter((ele) => ele > 5)
 
-            result = arr.map((ele) => ele * 2)
-
             arr = ["孙悟空", "猪八戒", "沙和尚"]
-
+            // html多个数据添加标签
             result = arr.map((ele) => "<li>" + ele + "</li>")
 
             arr = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -84,17 +95,28 @@
                     3, 3
                     6, 4
                     10, 5
-                
+                a : 1+1, b: 2
                 */
-                // console.log(a, b)
+                console.log(a, b)
 
-                return a * b
+                return a + b
             })
 
-            // result = arr.reduce((a, b) => a + b, 10)
-           
-
+            result = arr.reduce((a, b) => a + b, 10)
+           // 10 --->指定a的初始值
+                /* 
+                    10, 1
+                    11, 2
+                    13, 3
+                    16, 4
+                    20, 5
+                    25, 6
+                    31, 7
+                    38, 8
+                    46
+                */
             console.log(result)
+            // 46
         </script>
     </head>
     <body></body>

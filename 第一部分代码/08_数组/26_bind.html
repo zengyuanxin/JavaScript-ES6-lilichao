@@ -34,7 +34,7 @@
 
             const newFn = fn.bind(obj, 10, 20, 30)
 
-            // newFn()
+            newFn()
 
 
             const arrowFn = () => {
@@ -50,6 +50,7 @@
             class MyClass{
                 fn = () => {
                     console.log(this)
+                    //外层是MyClass
                 }
             }
 

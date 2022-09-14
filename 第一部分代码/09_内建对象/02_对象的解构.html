@@ -13,6 +13,7 @@
             let name, age, gender
 
             ;({ name, age, gender } = obj)
+            //js解析时，以大括号开头的解析成代码块，对象给代码块赋值会很奇怪，所以小括号开头消除误会
 
             let { address } = obj // 没有的属性返回undefined
 
